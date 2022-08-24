@@ -5,6 +5,7 @@ import {
 	amountAdded,
 	reset,
 } from "./features/counter/counter-slice";
+import { useFetchBreedsQuery } from "./features/dogs/dogs-api-slice";
 
 import reactLogo from "./assets/react.svg";
 import "./App.css";
@@ -25,6 +26,9 @@ function App() {
 		dispatch(reset());
 	};
 
+	const [numDogs, setNumDogs] = useState(10);
+	const { data = [], isFetching } = useFetchBreedsQuery(numDogs);
+
 	return (
 		<div className="App">
 			<div>
@@ -39,13 +43,73 @@ function App() {
 					/>
 				</a>
 			</div>
+
 			<h1>Vite + React</h1>
+
 			<div className="card">
-				<p>Count is {count}</p>
+				<div
+					style={{
+						borderRadius: "10px",
+						backgroundColor: "lightgray",
+						padding: "15px",
+					}}
+				>
+					<p>Count is {count}</p>
+					<button onClick={handleAddedOne}>Added +1</button>
+					<button onClick={handleAddedThree}>Added +3</button>
+					<button onClick={handleReset}>Reset</button>
+				</div>
+
 				<hr />
-				<button onClick={handleAddedOne}>Added +1</button>
-				<button onClick={handleAddedThree}>Added +3</button>
-				<button onClick={handleReset}>Reset</button>
+
+				<div>
+					<p>
+						<span>Dogs to fetch: </span>
+						<select
+							value={numDogs}
+							onChange={(e) => setNumDogs(Number(e.target.value))}
+						>
+							<option value={5}>5</option>
+							<option value={10}>10</option>
+							<option value={15}>15</option>
+							<option value={20}>20</option>
+						</select>
+					</p>
+				</div>
+
+				<div>
+					<p>Number of dogs fetched: {data.length}</p>
+					<table>
+						<thead>
+							<tr>
+								<th>Picture</th>
+								<th style={{ textAlign: "left" }}>Name</th>
+							</tr>
+						</thead>
+						<tbody>
+							{data.map((breed) => (
+								<tr key={breed.id}>
+									<td style={{ padding: "10px 20px" }}>
+										<img
+											style={{
+												width: "150px",
+												height: "150px",
+												borderRadius: "50%",
+												objectFit: "cover",
+											}}
+											src={breed.image.url}
+											alt={breed.name}
+										/>
+									</td>
+
+									<td style={{ textAlign: "left" }}>
+										{breed.name}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	);
